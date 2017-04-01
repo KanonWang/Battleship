@@ -89,7 +89,7 @@ var model = {
 };
 var controller={
   guesses:0,
-  processGuess:function (guess) {
+  parseGuess:function (guess) {
       var alphabet=["A","B","C","D","E","F","G"];
       if(guess===null||guess.length!==2){
           alert("Oops,please enter a letter and a number on the board.");
@@ -107,5 +107,36 @@ var controller={
           }
       }
       return null;
+  },
+  processGuess:function (guess) {
+      var location=this.parseGuess(guess);
+      if (location){
+          this.guesses++;
+          var hit=model.fire(location);
+          if(hit&&model.shipsSunk===model.numShips){
+              view.displayMessage("You sank all my battleship, in"+this.guesses+"guesses");
+          }
+      }
   }
 };
+function handleFireButton(){
+    var guessInput=document.getElementById("guessInput");
+    var guess=guessInput.value;
+    controller.processGuess(guess);
+    guessInput.value="";
+}
+function handleKeyPress(e){
+    var fireButton=document.getElementById("fireButton");
+    if(e.keyCode===13){
+        fireButton.click();
+        return false;
+    }
+}
+function init(){
+    var fireButton=document.getElementById("fireButton");
+    fireButton.onclick=handleFireButton;
+    var guessInput=document.getElementById("guessInput");
+    guessInput.onkeypress=handleKeyPress;
+}
+
+window.onload=init;
